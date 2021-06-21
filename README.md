@@ -2,6 +2,9 @@
 
 > useful for event binding 
 
+
+Demo [CodeSandbox](https://codesandbox.io/s/wonderful-franklin-zpck1)
+
 1. bind resize event
 
 ```ts
