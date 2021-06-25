@@ -1,9 +1,10 @@
 ## useListener
-
-> useful for event binding 
+attach native event without and don't care about bind / unbind
 
 
 Demo [CodeSandbox](https://codesandbox.io/s/wonderful-franklin-zpck1)
+
+### Usage
 
 1. bind resize event
 
@@ -63,18 +64,18 @@ function App() {
 4. debounce
 
 ```ts
-import {useState} from "react";
+import {useState, useRef} from "react";
 function App() {
-    const [width, setWidth] = useState(0)
-    useListener(window, "resize", () => {
+    const ref = useRef();
+    useListener(ref, "keyup", (e) => {
         // set width after 300 milliseconds when stopped resizing
-        setWidth(window.innerWidth);
+        console.log(e.target.value);
     }, {
         debounce: 300
     });
     return (
         <div>
-            <div>Width: {width}</div>
+            <input ref={ref} />
         </div>
     )
 }
@@ -99,3 +100,20 @@ function App() {
     )
 }
 ```
+
+### Reference
+
+```ts
+   const listener = useListener(element, event, callback, option);
+```
+* `element` `: Element | Document | Window | ref` element to attache event
+* `event` `: string` event name to bind
+* `callback` `: (e) => void` callback
+* `option`:
+
+    * `enabled` `: boolean` weather to listen or not, default `true`
+    * `throttle` `: number` to throttle event, default `undefined`
+    * `debounce` `: number` debounce event, default `undefined`
+    * `capture` `: boolean` native flag
+    * `passive` `: boolean` native flag
+    * `once` `: boolean` native flag

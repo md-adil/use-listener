@@ -4,16 +4,22 @@ interface Options {
     debounce?: number;
     throttle?: number;
     enabled?: boolean;
+    once?: boolean;
+    capture?: boolean;
+    passive?: boolean;
 }
+
 
 interface Element {
     addEventListener(...args: any[]): any;
     removeEventListener(...args: any[]): any;
 }
+// type Callback<T extends Element> = Parameters<T["addEventListener"]>[1];
+type Callback<T extends Element> = (...args: any[]) => any;
 
-export function useListener<T extends (...args: any[]) => void>(el: Element | undefined, evt: string, cb: T, opts: Options = {}) {
+export function useListener<T extends Element>(el: T | { current: T } , evt: string, cb: Callback<T>, opts: Options = {}) {
     const timer = useRef<any>()
-    const listener = useCallback<T>(((...args: any[]) => {
+    const listener = useCallback<any>(((...args: any[]) => {
         if (opts.debounce) {
             clearTimeout(timer.current);
             timer.current = setTimeout(() => {
@@ -32,21 +38,31 @@ export function useListener<T extends (...args: any[]) => void>(el: Element | un
             return;
         }
         cb(...args);
-    }) as T, []);
+    }), []);
     useEffect(() => {
         if (!el) {
             return;
+        }
+        if ("current" in el) {
+            el = el.current;
         }
         if (!(opts.enabled ?? true)) {
             el.removeEventListener(evt, listener);
             return;
         }
-        el.addEventListener(evt, listener);
+        el.addEventListener(evt, listener, {
+            capture: opts.capture,
+            passive: opts.passive,
+            once: opts.once
+        });
         return () => {
-            el.removeEventListener(evt, listener);
+            (el as T).removeEventListener(evt, listener);
         }
-    }, [el, opts.enabled])
+    }, [opts.enabled])
     return () => {
-        el?.removeEventListener(evt, listener);
+        if ("current" in el) {
+            el = el.current;
+        }
+        el.removeEventListener(evt, listener);
     }
 }
