@@ -1,8 +1,14 @@
 ## useListener
 attach native event without and don't care about bind / unbind
 
-
 Demo [CodeSandbox](https://codesandbox.io/s/wonderful-franklin-zpck1)
+
+## Installing
+
+    npm i react-use-listener
+
+## Import
+    import { useListener } from "react-use-listener";
 
 ### Usage
 
