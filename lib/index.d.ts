@@ -7,11 +7,11 @@ interface Options {
     passive?: boolean;
 }
 interface Element {
-    addEventListener(...args: any[]): any;
+    addEventListener<K = string>(event: K, callback: (e: any) => any, opt?: any): any;
     removeEventListener(...args: any[]): any;
 }
-declare type Callback<T extends Element> = (...args: any[]) => any;
+declare type Callback = (...args: any[]) => any;
 export declare function useListener<T extends Element>(el: T | {
-    current: T;
-}, evt: string, cb: Callback<T>, opts?: Options): () => void;
+    current: T | null | undefined;
+}, evt: string, cb: Callback, opts?: Options): () => void;
 export {};
