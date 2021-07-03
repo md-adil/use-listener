@@ -14,6 +14,8 @@ function *range(n: number) {
     }
 }
 
+
+
 it("debouncing", async () => {
     function App() {
         const [count, setCount] = useState(0);
@@ -60,4 +62,29 @@ it("should call app", () => {
         fireEvent.click(screen.getByRole("btn"));
     }
     expect(screen.getByRole("count").innerHTML).toBe('11');
+});
+
+it("debouncing with custom timing", async () => {
+    jest.useFakeTimers();
+    function App() {
+        const [count, setCount] = useState(0);
+        const el = useRef<HTMLButtonElement>(null);
+        useListener(window, "click", () => setCount(x => x + 1), {
+            debounce: 300
+        })
+        return (
+            <>
+                <div role="count">{count}</div>
+                <button ref={el} role="btn">Click</button>
+            </>
+        );
+    }
+    const screen = render(<App />);
+    fireEvent.click(screen.getByRole("btn"));
+    expect(screen.getByRole("count").innerHTML).toBe('0');
+    act(() => {
+        jest.advanceTimersByTime(300);
+    })
+    expect(screen.getByRole("count").innerHTML).toBe('1');
+    jest.useFakeTimers();
 });
