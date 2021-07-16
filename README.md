@@ -1,5 +1,6 @@
 ## useListener
-attach native event without and don't care about bind / unbind
+
+Attach native events without needing to worry about binding and unbinding manually.
 
 Demo [CodeSandbox](https://codesandbox.io/s/wonderful-franklin-zpck1)
 
@@ -12,7 +13,7 @@ Demo [CodeSandbox](https://codesandbox.io/s/wonderful-franklin-zpck1)
 
 ### Usage
 
-1. bind resize event
+1. Bind resize event
 
 ```ts
 import {useState} from "react";
@@ -27,7 +28,7 @@ function App() {
 }
 ```
 
-2. cancel binding
+2. Cancel binding
 
 ```ts
 import {useState} from "react";
@@ -45,10 +46,10 @@ function App() {
 }
 ```
 
-3. conditionally bind event
+3. Conditionally bind event
 
 ```ts
-import {useState} from "react";
+import { useState } from "react";
 function App() {
     const [enabled, setEnabled] = useState(false);
     const [width, setWidth] = useState(0)
@@ -66,8 +67,7 @@ function App() {
 }
 ```
 
-
-4. debounce
+4. Debounce
 
 ```ts
 import {useState, useRef} from "react";
@@ -87,7 +87,7 @@ function App() {
 }
 ```
 
-5. throttle
+5. Throttle
 
 ```ts
 import {useState} from "react";
