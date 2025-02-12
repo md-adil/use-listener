@@ -1,125 +1,118 @@
-## useListener
-
-Attach native events without needing to worry about binding and unbinding manually.
-
 Demo [CodeSandbox](https://codesandbox.io/s/wonderful-franklin-zpck1)
 
-## Installing
+# useListener
 
-    npm i react-use-listener
+A powerful and flexible React hook for attaching and managing event listeners on DOM elements with built-in support for **debouncing** and **throttling**.
 
-## Import
-    import { useListener } from "react-use-listener";
+## 🚀 Features
 
-### Usage
+- ✅ **Declarative event listener management**
+- ✅ **Supports debouncing and throttling**
+- ✅ **Works with refs and direct DOM elements**
+- ✅ **Automatic cleanup to prevent memory leaks**
+- ✅ **Flexible options: capture, passive, once**
 
-1. Bind resize event
+## 📦 Installation
 
-```ts
-import {useState} from "react";
+```sh
+npm install react-use-listener
+```
+
+or
+
+```sh
+yarn add react-use-listener
+```
+
+## 🔧 Usage
+
+### Basic Example
+
+```tsx
+import { useRef } from "react";
+import { useListener } from "react-use-listener";
+
 function App() {
-    const [width, setWidth] = useState(0)
-    useListener(window, "resize", () => {
-        setWidth(window.innerWidth);
-    });
-    return (
-        <div>Width: {width}</div>
-    )
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  useListener(buttonRef, "click", () => {
+    console.log("Button clicked!");
+  });
+
+  return <button ref={buttonRef}>Click Me</button>;
 }
 ```
 
-2. Cancel binding
+### Using Debounce and Throttle
 
-```ts
-import {useState} from "react";
-function App() {
-    const [width, setWidth] = useState(0)
-    const listener = useListener(window, "resize", () => {
-        setWidth(window.innerWidth);
-        if (window.innerWidth < 1000) {
-            listener();
-        }
-    });
-    return (
-        <div>Width: {width}</div>
-    )
+```tsx
+import { useListener } from "react-use-listener";
+
+function SearchBox() {
+  useListener(
+    window,
+    "resize",
+    () => {
+      console.log("Resized!");
+    },
+    { throttle: 200 }
+  );
+
+  return <input type="text" placeholder="Search..." />;
 }
 ```
 
-3. Conditionally bind event
+## 📜 API Reference
+
+### `useListener`
 
 ```ts
-import { useState } from "react";
-function App() {
-    const [enabled, setEnabled] = useState(false);
-    const [width, setWidth] = useState(0)
-    useListener(window, "resize", () => {
-        setWidth(window.innerWidth);
-    }, {
-        enabled
-    });
-    return (
-        <div>
-            <div>Width: {width}</div>
-            <button onClick={() => setEnabled(!enabled)}>Bind resize</button>
-        </div>
-    )
-}
+useListener(el, event, callback, options);
 ```
 
-4. Debounce
+#### Parameters:
 
-```ts
-import {useState, useRef} from "react";
-function App() {
-    const ref = useRef();
-    useListener(ref, "keyup", (e) => {
-        // set width after 300 milliseconds when stopped resizing
-        console.log(e.target.value);
-    }, {
-        debounce: 300
-    });
-    return (
-        <div>
-            <input ref={ref} />
-        </div>
-    )
-}
-```
+| Parameter  | Type                       | Description                           |
+| ---------- | -------------------------- | ------------------------------------- |
+| `el`       | `EventTarget`              | Target element or a React ref         |
+| `event`    | `string`                   | Event name (e.g., `click`, `keydown`) |
+| `callback` | `(...args: any[]) => void` | Function to execute when event fires  |
+| `options`  | `Options` (optional)       | Additional settings (see below)       |
 
-5. Throttle
+#### Options:
 
-```ts
-import {useState} from "react";
-function App() {
-    const [width, setWidth] = useState(0)
-    useListener(window, "resize", () => {
-        // trigger after 300 milliseconds
-        setWidth(window.innerWidth);
-    }, {
-        throttle: 300
-    });
-    return (
-        <div>
-            <div>Width: {width}</div>
-        </div>
-    )
-}
-```
+| Option     | Type      | Default     | Description                                           |
+| ---------- | --------- | ----------- | ----------------------------------------------------- |
+| `debounce` | `number`  | `undefined` | Delay execution after inactivity (ms)                 |
+| `throttle` | `number`  | `undefined` | Limit execution rate (ms)                             |
+| `enabled`  | `boolean` | `true`      | Enable or disable the event listener                  |
+| `once`     | `boolean` | `false`     | Remove listener after the first execution             |
+| `capture`  | `boolean` | `false`     | Use event capturing instead of bubbling               |
+| `passive`  | `boolean` | `false`     | Optimize performance by preventing `preventDefault()` |
 
-### Reference
+## 🎯 Best Practices
 
-```ts
-   const listener = useListener(element, event, callback, option);
-```
-* `element` `: Element | Document | Window | ref` element to attache event
-* `event` `: string` event name to bind
-* `callback` `: (e) => void` callback
-* `option`:
+- **Use refs for dynamically created elements** to ensure proper listener management.
+- **Use `enabled: false` when the listener is not needed** to avoid unnecessary event bindings.
+- **Prefer `throttle` for performance-sensitive events** like `scroll` and `resize`.
+- **Prefer `debounce` for user input events** like `keyup` and `search`.
 
-    * `enabled` `: boolean` weather to listen or not, default `true`
-    * `throttle` `: number` to throttle event, default `undefined`
-    * `debounce` `: number` debounce event, default `undefined`
-    * `capture` `: boolean` native flag
-    * `passive` `: boolean` native flag
-    * `once` `: boolean` native flag
+## 🛠 Contributing
+
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/md-adil/use-listener.git
+   ```
+2. Install dependencies:
+   ```sh
+   cd use-listener
+   npm install
+   ```
+3. Run tests:
+   ```sh
+   npm test
+   ```
+
+## 📄 License
+
+MIT License. See [LICENSE](LICENSE) for details.
