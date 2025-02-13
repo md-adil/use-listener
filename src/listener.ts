@@ -34,17 +34,19 @@ export function useListener<
   cb: Callback,
   opts: UseListenerOptions = {}
 ) {
-  const listenerRef = useRef<[evt: E, listener?: EventListener]>([evt]);
   const { enabled = true, debounce, throttle } = opts;
   const callbackRef = useRef(cb);
+  const listenerRef = useRef<EventListener>(null);
 
   useEffect(() => {
-    callbackRef.current = cb; // Always update the reference to the latest function
+    callbackRef.current = cb;
   }, [cb]);
 
   useEffect(() => {
     const element = el && "current" in el ? el.current : el;
+
     if (!element) return;
+
     let handler = (...args: any[]) => callbackRef.current(...args);
 
     if (throttle) {
@@ -54,23 +56,19 @@ export function useListener<
       handler = createDebounce(handler, debounce);
     }
 
-    const [prevEvt, prevHandler] = listenerRef.current;
-
-    if (prevHandler) {
-      element.removeEventListener(prevEvt, prevHandler);
-    }
-
     if (!enabled) {
-      listenerRef.current = [evt];
-      return;
+      return () => {
+        element.removeEventListener(evt, handler);
+      };
     }
 
-    listenerRef.current = [evt, handler];
     element.addEventListener(evt, handler, {
       capture: opts.capture,
       passive: opts.passive,
       once: opts.once,
     });
+
+    listenerRef.current = handler;
 
     return () => {
       element.removeEventListener(evt, handler);
@@ -87,11 +85,11 @@ export function useListener<
   ]);
 
   return () => {
-    const element = el && "current" in el ? el.current : el;
-    const [, handler] = listenerRef.current;
+    const element = el && "current" in el ? el.current : el,
+      handler = listenerRef.current;
     if (element && handler) {
       element.removeEventListener(evt, handler);
-      listenerRef.current = [evt];
+      listenerRef.current = null;
     }
   };
 }
