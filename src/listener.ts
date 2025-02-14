@@ -25,10 +25,7 @@ interface EventTargetWithListener extends EventTarget {
 
 type Callback = (...args: any[]) => any;
 
-export function useListener<
-  T extends EventTargetWithListener,
-  E extends keyof GlobalEventHandlersEventMap
->(
+export function useListener<T extends EventTargetWithListener, E extends keyof GlobalEventHandlersEventMap>(
   el: T | { current: T | null } | null | undefined,
   evt: E,
   cb: Callback,
@@ -56,10 +53,12 @@ export function useListener<
       handler = createDebounce(handler, debounce);
     }
 
+    const cleanup = () => {
+      element.removeEventListener(evt, handler);
+    };
+
     if (!enabled) {
-      return () => {
-        element.removeEventListener(evt, handler);
-      };
+      return cleanup;
     }
 
     element.addEventListener(evt, handler, {
@@ -70,19 +69,8 @@ export function useListener<
 
     listenerRef.current = handler;
 
-    return () => {
-      element.removeEventListener(evt, handler);
-    };
-  }, [
-    el,
-    enabled,
-    evt,
-    debounce,
-    throttle,
-    opts.capture,
-    opts.passive,
-    opts.once,
-  ]);
+    return cleanup;
+  }, [el, enabled, evt, debounce, throttle, opts.capture, opts.passive, opts.once]);
 
   return () => {
     const element = el && "current" in el ? el.current : el,
