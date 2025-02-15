@@ -43,12 +43,30 @@ function App() {
 }
 ```
 
+### Un bind listener
+
+```tsx
+import { useRef } from "react";
+import { useListener } from "react-use-listener";
+
+function App() {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const unListen = useListener(buttonRef, "click", () => {
+    console.log("Button clicked!");
+    unListen(); // click event won't fired again.
+  });
+
+  return <button ref={buttonRef}>Click Me</button>;
+}
+```
+
 ### Using Debounce and Throttle
 
 ```tsx
 import { useListener } from "react-use-listener";
 
-function SearchBox() {
+function WindowBox() {
   useListener(
     window,
     "resize",
@@ -58,7 +76,7 @@ function SearchBox() {
     { throttle: 200 }
   );
 
-  return <input type="text" placeholder="Search..." />;
+  return <div>Resize the window</div>;
 }
 ```
 
